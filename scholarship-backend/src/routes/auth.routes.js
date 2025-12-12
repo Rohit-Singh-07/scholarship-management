@@ -1,15 +1,25 @@
+// src/routes/auth.routes.js
 const express = require('express');
 const router = express.Router();
-const authController = require('../controllers/auth.controller');
-const { validateRegister, validateLogin, validateRefresh } = require('../validators/auth.validator');
+const ctrl = require('../controllers/auth.controller');
 const { authMiddleware } = require('../middlewares/auth.middleware');
+const { rateLimiterForLogin } = require('../middlewares/rateLimit.middleware');
 
-router.post('/register', validateRegister, authController.register);
-router.post('/login', validateLogin, authController.login);
-router.post('/refresh', validateRefresh, authController.refresh);
+// Public
+router.post('/register', ctrl.register);
+router.post('/verify-email', ctrl.verifyEmail);
+router.post('/login', rateLimiterForLogin, ctrl.login);
+router.post('/refresh', ctrl.rotate);
 
-// protected
-router.get('/me', authMiddleware, authController.me);
-router.post('/logout', authMiddleware, authController.logout);
+// Support both route names used in various places/tests:
+router.post('/request-password-reset', ctrl.requestPasswordReset);
+router.post('/request-reset', ctrl.requestPasswordReset);
+
+router.post('/reset-password', ctrl.resetPassword);
+router.post('/send-otp', ctrl.sendOtp);
+router.post('/verify-otp', ctrl.verifyOtp);
+
+// Protected
+router.post('/logout', authMiddleware, ctrl.logout);
 
 module.exports = router;
