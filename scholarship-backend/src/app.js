@@ -2,7 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const morgan = require("morgan");
 const helmet = require("helmet");
-const cors = require("cors");
+const cors = require("./config/cors");
 const rateLimit = require("express-rate-limit");
 const routes = require('./routes');
 const errorHandler = require('./middlewares/error.middleware');
@@ -30,7 +30,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan("dev"));
 app.use(helmet());
-app.use(cors());
+app.use(cors);
 
 // Public folder (only mount ONCE)
 app.use('/uploads', express.static(storage.UPLOAD_DIR));
